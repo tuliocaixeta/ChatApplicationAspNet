@@ -1,0 +1,28 @@
+@model IEnumerable<Repositories.Models.Message>
+
+@{
+    ViewData["Title"] = "Index";
+}
+<h1>Welcome to chat</h1>
+@foreach (var item in Model) {
+
+    <div class="messageLine">
+        <span class='messageTime'>
+            @item.MessageSendingTime.ToShortTimeString()
+        </span> 
+        <b class='user-name'>
+            @item.User
+            :
+        </b>
+        <span class="messageContent">
+            @item.MessageContent
+        </span>
+        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+    </div>  
+}
+
+<p>
+    <a asp-action="Create">Send a message</a>
+</p>
