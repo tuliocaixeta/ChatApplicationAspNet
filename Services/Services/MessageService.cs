@@ -7,9 +7,12 @@ namespace Services.Services
     public class MessageService : IMessageService
     {
         public readonly IRepository<Message> messageRepository;
-        public MessageService(IRepository<Message> repository)
+        public readonly IBotRepository botRepository;
+        private readonly string BOT_COMMAND = "/stock";
+        public MessageService(IRepository<Message> messageRepository, IBotRepository botRepository)
         {
-            messageRepository = repository;
+            this.messageRepository = messageRepository;
+            this.botRepository = botRepository;
         }
 
         public async Task<IEnumerable<Message>> GetChatMessages()
@@ -41,13 +44,23 @@ namespace Services.Services
         {
             try
             {
-                await messageRepository.Create(message);
+                if (validateStockBotCommand(message)) {
+                    await botRepository.ConsulteTheBot(message);
+                } else {
+                    await messageRepository.Create(message);
+                }
+               
             }
             catch (Exception ex)
             {
                 throw;
             }
 
+        }
+
+        private bool validateStockBotCommand(Message message)
+        {
+            return message.MessageContent.Contains(BOT_COMMAND);
         }
 
         public void DeleteMessage(int id )
