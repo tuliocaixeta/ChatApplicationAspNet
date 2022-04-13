@@ -8,11 +8,13 @@ namespace Services.Services
     {
         public readonly IRepository<Message> messageRepository;
         public readonly IBotRepository botRepository;
+        public readonly IStockQuoteService stockQuoteService;
         private readonly string BOT_COMMAND = "/stock";
-        public MessageService(IRepository<Message> messageRepository, IBotRepository botRepository)
+        public MessageService(IRepository<Message> messageRepository, IBotRepository botRepository, IStockQuoteService stockQuoteService)
         {
             this.messageRepository = messageRepository;
             this.botRepository = botRepository;
+            this.stockQuoteService = stockQuoteService;
         }
 
         public async Task<IEnumerable<Message>> GetChatMessages()
@@ -58,11 +60,9 @@ namespace Services.Services
 
         }
 
-        private bool validateStockBotCommand(Message message)
-        {
-            return message.MessageContent.Contains(BOT_COMMAND);
-        }
+      
 
+        
         public void DeleteMessage(int id )
         {
             try
@@ -86,6 +86,31 @@ namespace Services.Services
                 throw;
             }
 
+        }
+
+        public async Task GetStockQuote()
+        {
+            try
+            {
+                await stockQuoteService.GetStockQuoteMesasge();
+                //if(message.MessageContent != "")
+                //{
+                //    message.User = "Bot";
+                //    await SendMessage(message);
+                //}
+                
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+
+
+        private bool validateStockBotCommand(Message message)
+        {
+            return message.MessageContent.Contains(BOT_COMMAND);
         }
     }
 }

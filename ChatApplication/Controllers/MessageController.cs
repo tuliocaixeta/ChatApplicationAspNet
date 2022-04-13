@@ -14,14 +14,15 @@ namespace ChatApplication.Controllers
 
         public MessageController(IMessageService messageService)
         {
-           
+
             this._messageService = messageService;
         }
 
         // GET: Message
         public async Task<IActionResult> Index()
         {
-            return View(await _messageService.GetChatMessages());
+            var messages = await _messageService.GetChatMessages();
+            return View(messages);
         }
 
         // GET: Message/Details/5
@@ -42,7 +43,7 @@ namespace ChatApplication.Controllers
             return View(message);
         }
 
-        
+
 
         // GET: Message/Create
         public IActionResult Create()
@@ -64,6 +65,14 @@ namespace ChatApplication.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View(message);
+        }
+
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        public void GetBotResponse()
+        {
+            
+             _messageService.GetStockQuote();
         }
 
         // GET: Message/Edit/5
@@ -151,7 +160,12 @@ namespace ChatApplication.Controllers
 
         private bool ValidateMessageFromUser(Message message)
         {
+            if (message.User == "Bot")
+                return false;
+            if (message.User == "")
+                return false;
             return message.User != User.Identity.Name;
+
         }
     }
 }
