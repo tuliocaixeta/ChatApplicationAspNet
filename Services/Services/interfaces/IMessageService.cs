@@ -9,5 +9,6 @@ namespace Services.Services.interfaces
         Task<Message> GetMessageById(int? id);
         void EditMessage(Message message);
         void DeleteMessage(int id);
+        Task GetStockQuote();
     }
 }

@@ -7,15 +7,17 @@ using Repositories.Repositories;
 using Services.Services.interfaces;
 using Services.Services;
 using Repositories.Data;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString));
 builder.Services.AddScoped<IRepository<Message>, MessageRepository>();
+
+builder.Services.AddScoped<IBotRepository, BotRepository>();
+
+builder.Services.AddScoped<IStockQuoteService, StockQuoteService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<ApplicationDbContext, ApplicationDbContext>();
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();

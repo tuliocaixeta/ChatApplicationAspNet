@@ -7,9 +7,14 @@ namespace Services.Services
     public class MessageService : IMessageService
     {
         public readonly IRepository<Message> messageRepository;
-        public MessageService(IRepository<Message> repository)
+        public readonly IBotRepository botRepository;
+        public readonly IStockQuoteService stockQuoteService;
+        private readonly string BOT_COMMAND = "/stock";
+        public MessageService(IRepository<Message> messageRepository, IBotRepository botRepository, IStockQuoteService stockQuoteService)
         {
-            messageRepository = repository;
+            this.messageRepository = messageRepository;
+            this.botRepository = botRepository;
+            this.stockQuoteService = stockQuoteService;
         }
 
         public async Task<IEnumerable<Message>> GetChatMessages()
@@ -41,7 +46,12 @@ namespace Services.Services
         {
             try
             {
-                await messageRepository.Create(message);
+                if (validateStockBotCommand(message)) {
+                    await botRepository.ConsulteTheBot(message);
+                } else {
+                    await messageRepository.Create(message);
+                }
+               
             }
             catch (Exception ex)
             {
@@ -50,6 +60,9 @@ namespace Services.Services
 
         }
 
+      
+
+        
         public void DeleteMessage(int id )
         {
             try
@@ -73,6 +86,31 @@ namespace Services.Services
                 throw;
             }
 
+        }
+
+        public async Task GetStockQuote()
+        {
+            try
+            {
+                await stockQuoteService.GetStockQuoteMesasge();
+                //if(message.MessageContent != "")
+                //{
+                //    message.User = "Bot";
+                //    await SendMessage(message);
+                //}
+                
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+
+
+        private bool validateStockBotCommand(Message message)
+        {
+            return message.MessageContent.Contains(BOT_COMMAND);
         }
     }
 }
